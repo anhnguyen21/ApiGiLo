@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\review;
 
 class ReviewController extends Controller
@@ -35,9 +36,25 @@ class ReviewController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function getReviewDetails($id)
     {
-        //
+        $review = DB::table('reviews')
+        ->join('product','reviews.id','=','product.id')
+        ->join('users','reviews.id','=','users.id')
+        ->select('product.name','users.account','reviews.*')
+        ->where('id_product',$id)
+        ->get();
+        return $review;
+    }
+
+    public function addProductReview(Request $request){
+        $product=new review();
+        $product->id_product=$request->get('id_pro');
+        $product->id_user=$request->get('id_user');
+        $product->content=$request->get('content');
+        $product->time=date_create()->format('Y-m-d H:i:s');
+        $product->save();
+        echo "add 1 review for product";
     }
 
     /**

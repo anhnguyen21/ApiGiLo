@@ -36,12 +36,19 @@ Route::get('products',[ProductController::class,'getProduct']);
 
 //Order
 Route::get('order',[OrderController::class,'getOrder']);
+Route::get('order/{id}',[OrderController::class,'getOrderDetails']);
+Route::post('addproducttoorder',[OrderController::class,'getAddProduct']);
+Route::delete('deleteproducttoorder',[OrderController::class,'deleteProductInOrder']);
 
 //Review
 Route::get('review',[ReviewController::class,'index']);
+Route::get('review/{id}',[ReviewController::class,'getReviewDetails']);
+Route::post('review',[ReviewController::class,'addProductReview']);
 
 //Heart
 Route::get('heart',[HeartController::class,'index']);
+Route::get('heart/{id}',[HeartController::class,'getHeartDetails']);
+Route::put('heart',[HeartController::class,'addProductHeart']);
 
-//NonficationC
+//Nonfication
 Route::get('nofication',[NonficationController::class,'index']);

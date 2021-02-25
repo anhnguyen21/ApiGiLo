@@ -26,11 +26,11 @@ class LoginController extends Controller
         $name = $request->input('account');
 		$password = $request->input('password');   
         $key ="anh";
-		if($name=="anhnguyen" && $password=="123456"){
-            $_SESSION['name']=1;
+        if (Auth::attempt(['account' => $name, 'password' => $password])) {
+            $user_id= Auth::user()->id;
             $cookie=Cookie::make('user', $name, 30);
-            $array = array("idToken" => $name);
-            return response()->json($array,200)->cookie($cookie);
+            $data = array("idToken" => $user_id);
+            return response()->json($data,200)->cookie($cookie);
             
 		}else{
 			$array = array("data" => null);
@@ -48,19 +48,16 @@ class LoginController extends Controller
     {
         $name = $request->input('account');
         $password = $request->input('password');
-        $email= $request->input('useremail');
         $key ="anh";
         if (Auth::attempt(['account' => $name, 'password' => $password])) {
             $user_id= Auth::user()->id;
-            // $data=JWT::encode($user_id, $key);
 	 	    $array = array("idToken" => $user_id);
 			return response()->json($array,400);
         }else{
             $users=new users();
-            $users->id=4;
             $users->account=$request->get('account');
-            $users->firstName='anh';
-            $users->lastName='Nguyen';
+            $users->firstName=$request->get('firstName');
+            $users->lastName=$request->get('lastName');
             $users->email=$request->get('email');
             $users->phone=$request->get('phone');
             $users->gender=$request->get('gender');
@@ -69,6 +66,7 @@ class LoginController extends Controller
             $users->birthday=date_create()->format('Y-m-d H:i:s');
             $users->remember_token='123';
             $users->save();
+            echo "regist user success";
         }
     }
 

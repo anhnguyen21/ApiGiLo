@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\order;
 
 class OrderController extends Controller
@@ -40,6 +41,35 @@ class OrderController extends Controller
         //
     }
 
+    public function getAddProduct(Request $request)
+    {
+        $pro=DB::select('select id , quantity from orders where id_product ='.$request->get('id_pro').' and id_user='.$request->get('id_user'));
+        if($pro==null){
+            $order=new order();
+            $order->id_product=$request->get('id_pro');
+            $order->id_user=$request->get('id_user');
+            $order->quantity=1;
+            $order->save();
+            echo "add new product sussess";
+        }else{
+            order::where("id", $pro[0]->id)->update([
+              "quantity" =>$pro[0]->quantity+1
+          ]);
+          echo "increase quantity of product";
+        }
+    }
+
+    public function getOrderDetails($id)
+    {
+        $review = DB::table('orders')
+        ->join('product','orders.id','=','product.id')
+        ->join('users','orders.id','=','users.id')
+        ->select('product.*','users.account','orders.*')
+        ->where('id_user',$id)
+        ->get();
+        return $review;
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -61,5 +91,18 @@ class OrderController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function deleteProductInOrder(Request $request){
+        $pro=DB::select('select id , quantity from orders where id_product ='.$request->get('id_pro').' and id_user='.$request->get('id_user'));
+        if($pro[0]->quantity > 1){
+            order::where("id", $pro[0]->id)->update([
+                "quantity" =>$pro[0]->quantity-1
+            ]);
+            echo "decrease quantity of product";
+        }else{
+            DB::delete('delete from orders where id ='.$pro[0]->id);
+            echo "delete product";
+        }
     }
 }
