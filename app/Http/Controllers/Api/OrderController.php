@@ -61,13 +61,9 @@ class OrderController extends Controller
 
     public function getOrderDetails($id)
     {
-        $review = DB::table('orders')
-        ->join('product','orders.id','=','product.id')
-        ->join('users','orders.id','=','users.id')
-        ->select('product.*','users.account','orders.*')
-        ->where('id_user',$id)
-        ->get();
-        return $review;
+        echo $id;
+        $order = DB::select('select o.quantity as quantityCart, p.* from product as p , orders as o where p.id =o.id_product and o.id_user ='.$id);
+        return $order;
     }
 
     /**
